@@ -1,4 +1,4 @@
-priority = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+priority = '.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 def run_part_1(input_file):
@@ -10,10 +10,10 @@ def run_part_1(input_file):
             length = len(sack)
             compartment_1 = set(sack[:length//2])
             compartment_2 = set(sack[length//2:])
-            errors = compartment_1.intersection(compartment_2)
+            errors = compartment_1 & compartment_2
 
             for error in errors:
-                total += priority.index(error) + 1
+                total += priority.index(error)
 
     print(total)
 
@@ -29,9 +29,9 @@ def run_part_2(input_file):
             sacks.append(sack)
 
             if index == 2:
-                badges = sacks[0].intersection(sacks[1].intersection(sacks[2]))
+                badges = sacks[0] & sacks[1] & sacks[2]
                 for badge in badges:
-                    total += priority.index(badge) + 1
+                    total += priority.index(badge)
                 index = 0
                 sacks.clear()
             else:
