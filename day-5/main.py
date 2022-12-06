@@ -1,24 +1,13 @@
+INVALID = ' 123456789';
+
+
 def run_part_1(input_file):
     stacks = [[], [], [], [], [], [], [], [], []]
-    phase = 0
 
     with open(input_file) as file:
         for line in file:
-            if phase == 0:
-                if line[1] == '1':
-                    phase = 1
-                    for stack in stacks:
-                        stack.reverse()
-                    continue
-                for stack_index in range(9):
-                    index = 1 + stack_index * 4
-                    box = line[index]
-                    if box != ' ':
-                        stacks[stack_index].append(box)
-            else:
+            if line.startswith('move'):
                 instructions = line.strip()
-                if instructions == '':
-                    continue
                 _, n, _, s, _, d = instructions.split()
                 n = int(n)
                 s = int(s)-1
@@ -26,6 +15,15 @@ def run_part_1(input_file):
                 for _ in range(n):
                     box = stacks[s].pop()
                     stacks[d].append(box)
+            elif not line.strip():
+                for stack in stacks:
+                    stack.reverse()
+            else:
+                for stack_index in range(9):
+                    index = 1 + stack_index * 4
+                    box = line[index]
+                    if box not in INVALID:
+                        stacks[stack_index].append(box)
 
     for stack in stacks:
         print(stack[-1], end='')
@@ -34,25 +32,11 @@ def run_part_1(input_file):
 
 def run_part_2(input_file):
     stacks = [[], [], [], [], [], [], [], [], []]
-    phase = 0
 
     with open(input_file) as file:
         for line in file:
-            if phase == 0:
-                if line[1] == '1':
-                    phase = 1
-                    for stack in stacks:
-                        stack.reverse()
-                    continue
-                for stack_index in range(9):
-                    index = 1 + stack_index * 4
-                    box = line[index]
-                    if box != ' ':
-                        stacks[stack_index].append(box)
-            else:
+            if line.startswith('move'):
                 instructions = line.strip()
-                if instructions == '':
-                    continue
                 _, n, _, s, _, d = instructions.split()
                 n = int(n)
                 s = int(s)-1
@@ -62,6 +46,15 @@ def run_part_2(input_file):
                     boxes.append(stacks[s].pop())
                 for _ in range(len(boxes)):
                     stacks[d].append(boxes.pop())
+            elif not line.strip():
+                for stack in stacks:
+                    stack.reverse()
+            else:
+                for stack_index in range(9):
+                    index = 1 + stack_index * 4
+                    box = line[index]
+                    if box not in INVALID:
+                        stacks[stack_index].append(box)
 
     for stack in stacks:
         print(stack[-1], end='')
