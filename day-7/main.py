@@ -4,6 +4,9 @@ class File:
         self.name = name
         self.size = size
 
+    def get_size(self):
+        return self.size
+
 
 class Directory:
 
@@ -17,6 +20,32 @@ class Directory:
             if child.name == name:
                 return child
         return None
+
+    def get_size(self):
+        size = 0
+        for child in self.children:
+            size += child.get_size()
+        return size
+
+
+def agg_size(directory, limit, size):
+    directory_size = directory.get_size()
+    if directory_size <= limit:
+        size += directory_size
+    for child in directory.children:
+        if isinstance(child, Directory):
+            size = agg_size(child, limit, size)
+    return size
+
+
+def find_dir(directory, minimum, current):
+    directory_size = directory.get_size()
+    if minimum <= directory_size < current.get_size():
+        current = directory
+    for child in directory.children:
+        if isinstance(child, Directory):
+            current = find_dir(child, minimum, current)
+    return current
 
 
 def parse_input(input_file):
@@ -40,7 +69,7 @@ def parse_input(input_file):
                 directory = data[1]
                 current_directory.children.append(Directory(directory, current_directory, []))
             else:
-                size = data[0]
+                size = int(data[0])
                 file_name = data[1]
                 current_directory.children.append(File(file_name, size))
 
@@ -48,8 +77,16 @@ def parse_input(input_file):
 
 
 def run_part_1(input_file):
-    print(parse_input(input_file))
+    tree = parse_input(input_file)
+    print(agg_size(tree, 100000, 0))
+
+
+def run_part_2(input_file):
+    tree = parse_input(input_file)
+    space = 30000000 - (70000000 - tree.get_size())
+    print(find_dir(tree, space, tree).get_size())
 
 
 if __name__ == '__main__':
     run_part_1("./input.txt")
+    run_part_2("./input.txt")
