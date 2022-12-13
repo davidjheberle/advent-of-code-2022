@@ -1,41 +1,50 @@
-import json
+from math import prod
 
 
 def compare(left, right):
     if isinstance(left, int) and isinstance(right, int):
-        return None if left == right else left < right
-    elif isinstance(left, int):
-        left = [left]
-    elif isinstance(right, int):
-        right = [right]
+        return left - right
 
-    for lhs, rhs in zip(left, right):
-        result = compare(lhs, rhs)
-        if result is not None:
-            return result
+    if isinstance(left, list) and isinstance(right, list):
+        for lhs, rhs in zip(left, right):
+            if result := compare(lhs, rhs):
+                return result
+        return len(left) - len(right)
 
-    return len(left) <= len(right)
+    if isinstance(left, int):
+        return compare([left], right)
+
+    if isinstance(right, int):
+        return compare(left, [right])
+
+    assert False
+
+
+class Comparator:
+    def __init__(self, x):
+        self.x = x
+
+    def __lt__(self, other):
+        return compare(self.x, other.x) < 0
+
+    def __eq__(self, other):
+        return compare(self.x, other.x) == 0
 
 
 def run_part_1(input_file):
-    correct = []
     with open(input_file) as file:
-        lines = []
-        for line in file.readlines():
-            line = line.strip()
-            if line:
-                lines.append(line)
+        pairs = [[eval(x) for x in pair.splitlines()] for pair in file.read().split("\n\n")]
+    print(sum(i + 1 for i, (left, right) in enumerate(pairs) if compare(left, right) < 0))
 
-    for i in range(0, len(lines), 2):
-        left = json.loads(lines[i])
-        right = json.loads(lines[i+1])
 
-        if compare(left, right):
-            correct.append(i//2+1)
-
-    print(correct)
-    print(sum(correct))
+def run_part_2(input_file):
+    with open(input_file) as file:
+        packets = [eval(x) for x in file.read().splitlines() if len(x) > 0]
+    dividers = [[2]], [[6]]
+    result = sorted([*packets, *dividers], key=Comparator)
+    print(prod(result.index(x) + 1 for x in dividers))
 
 
 if __name__ == '__main__':
     run_part_1("./input.txt")
+    run_part_2("./input.txt")
